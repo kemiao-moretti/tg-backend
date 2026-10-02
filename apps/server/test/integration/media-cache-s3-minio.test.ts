@@ -81,80 +81,82 @@ async function readBlob(
   }
 }
 
-describe.skipIf(!containerRuntimeAvailable)('S3 media blob backend against an S3-compatible container', () => {
-  beforeAll(async () => {
-    container = await new GenericContainer(S3_IMAGE)
-      .withEnvironment({
-        SCALITY_ACCESS_KEY_ID: S3_ACCESS_KEY,
-        SCALITY_REGION: REGION,
-        SCALITY_SECRET_ACCESS_KEY: S3_SECRET_KEY,
-      })
-      .withExposedPorts(S3_PORT)
-      .withWaitStrategy(Wait.forHttp('/getready', S3_PORT))
-      .withStartupTimeout(120_000)
-      .start();
-
-    const endpoint = `http://${container.getHost()}:${container.getMappedPort(S3_PORT)}`;
-    const credentials = {
-      accessKeyId: S3_ACCESS_KEY,
-      secretAccessKey: S3_SECRET_KEY,
-    };
-    bootstrapClient = new S3Client({
-      credentials,
-      endpoint,
-      forcePathStyle: true,
-      region: REGION,
+describe.skipIf(!containerRuntimeAvailable)(
+  'S3 media blob backend against an S3-compatible container',
+  () => {
+      beforeAll(async () => {
+        container = await new GenericContainer(S3_IMAGE)
+          .withEnvironment({
+            SCALITY_ACCESS_KEY_ID: S3_ACCESS_KEY,
+            SCALITY_REGION: REGION,
+            SCALITY_SECRET_ACCESS_KEY: S3_SECRET_KEY,
+          })
+          .withExposedPorts(S3_PORT)
+          .withWaitStrategy(Wait.forHttp('/getready', S3_PORT))
+          .withStartupTimeout(120_000)
+          .start();
+    
+        const endpoint = `http://${container.getHost()}:${container.getMappedPort(S3_PORT)}`;
+        const credentials = {
+          accessKeyId: S3_ACCESS_KEY,
+          secretAccessKey: S3_SECRET_KEY,
+        };
+        bootstrapClient = new S3Client({
+          credentials,
+          endpoint,
+          forcePathStyle: true,
+          region: REGION,
+        });
+        await bootstrapClient.send(new CreateBucketCommand({ Bucket: BUCKET }));
+        backend = new S3MediaBlobBackend({
+          bucket: BUCKET,
+          credentials,
+          endpoint,
+          forcePathStyle: true,
+          prefix: PREFIX,
+          region: REGION,
+        });
+      }, 120_000);
+    
+      afterAll(async () => {
+        bootstrapClient?.destroy();
+        await container?.stop();
+      }, 30_000);
+    
+      it('keeps create-only, verification, range, prefix, and deletion semantics', async () => {
+        if (!backend || !bootstrapClient) {
+          throw new Error('MinIO integration fixture was not initialized');
+        }
+        const content = Buffer.from('koharu durable MinIO compatibility baseline');
+        const blob = identity(content);
+        const expectedKey = `${PREFIX}/${blob.relativeKey}`;
+    
+        await expect(backend.put({ identity: blob, source: source(content) })).resolves.toEqual({
+          outcome: 'created',
+        });
+        await expect(backend.put({ identity: blob, source: source(content) })).resolves.toEqual({
+          outcome: 'already_present',
+        });
+    
+        expect(backend.key(blob)).toBe(expectedKey);
+        await expect(
+          bootstrapClient.send(new HeadObjectCommand({ Bucket: BUCKET, Key: expectedKey })),
+        ).resolves.toMatchObject({
+          ContentLength: content.byteLength,
+          Metadata: { 'koharu-sha256': blob.sha256 },
+        });
+        await expect(backend.head(blob)).resolves.toMatchObject({
+          byteLength: content.byteLength,
+          sha256: blob.sha256,
+        });
+    
+        await expect(readBlob(backend, blob)).resolves.toEqual(content);
+        const range = { end: 21, start: 7 };
+        await expect(readBlob(backend, blob, range)).resolves.toEqual(
+          content.subarray(range.start, range.end + 1),
+        );
+    
+        await expect(backend.delete(blob)).resolves.toBe('absent_or_deleted');
+        await expect(backend.head(blob)).resolves.toBeNull();
+      });
     });
-    await bootstrapClient.send(new CreateBucketCommand({ Bucket: BUCKET }));
-    backend = new S3MediaBlobBackend({
-      bucket: BUCKET,
-      credentials,
-      endpoint,
-      forcePathStyle: true,
-      prefix: PREFIX,
-      region: REGION,
-    });
-  }, 120_000);
-
-  afterAll(async () => {
-    bootstrapClient?.destroy();
-    await container?.stop();
-  }, 30_000);
-
-  it('keeps create-only, verification, range, prefix, and deletion semantics', async () => {
-    if (!backend || !bootstrapClient) {
-      throw new Error('MinIO integration fixture was not initialized');
-    }
-    const content = Buffer.from('koharu durable MinIO compatibility baseline');
-    const blob = identity(content);
-    const expectedKey = `${PREFIX}/${blob.relativeKey}`;
-
-    await expect(backend.put({ identity: blob, source: source(content) })).resolves.toEqual({
-      outcome: 'created',
-    });
-    await expect(backend.put({ identity: blob, source: source(content) })).resolves.toEqual({
-      outcome: 'already_present',
-    });
-
-    expect(backend.key(blob)).toBe(expectedKey);
-    await expect(
-      bootstrapClient.send(new HeadObjectCommand({ Bucket: BUCKET, Key: expectedKey })),
-    ).resolves.toMatchObject({
-      ContentLength: content.byteLength,
-      Metadata: { 'koharu-sha256': blob.sha256 },
-    });
-    await expect(backend.head(blob)).resolves.toMatchObject({
-      byteLength: content.byteLength,
-      sha256: blob.sha256,
-    });
-
-    await expect(readBlob(backend, blob)).resolves.toEqual(content);
-    const range = { end: 21, start: 7 };
-    await expect(readBlob(backend, blob, range)).resolves.toEqual(
-      content.subarray(range.start, range.end + 1),
-    );
-
-    await expect(backend.delete(blob)).resolves.toBe('absent_or_deleted');
-    await expect(backend.head(blob)).resolves.toBeNull();
-  });
-});
