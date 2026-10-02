@@ -10,9 +10,10 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { MediaBlobIdentity, MediaBlobReadRange } from '../../src/media-cache/blob-store.js';
 import { S3MediaBlobBackend } from '../../src/media-cache/s3-blob-backend.js';
 
-// Pinned from the official MinIO image tags:
-// https://hub.docker.com/r/minio/minio/tags
-const MINIO_IMAGE = 'minio/minio:RELEASE.2025-09-07T16-13-09Z';
+// Pinned from the official MinIO image tags. Pull from quay.io, not Docker Hub:
+// minio/minio on Docker Hub is no longer anonymously pullable.
+// https://quay.io/repository/minio/minio
+const MINIO_IMAGE = 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z';
 const MINIO_PORT = 9_000;
 const MINIO_ACCESS_KEY = 'koharu-minio';
 const MINIO_SECRET_KEY = 'koharu-minio-integration-secret';
