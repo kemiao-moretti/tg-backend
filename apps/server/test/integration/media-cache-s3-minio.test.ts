@@ -10,13 +10,17 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { MediaBlobIdentity, MediaBlobReadRange } from '../../src/media-cache/blob-store.js';
 import { S3MediaBlobBackend } from '../../src/media-cache/s3-blob-backend.js';
 
-// Pinned from the official MinIO image tags. Pull from quay.io, not Docker Hub:
-// minio/minio on Docker Hub is no longer anonymously pullable.
-// https://quay.io/repository/minio/minio
-const MINIO_IMAGE = 'quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z';
-const MINIO_PORT = 9_000;
-const MINIO_ACCESS_KEY = 'koharu-minio';
-const MINIO_SECRET_KEY = 'koharu-minio-integration-secret';
+// Pinned Scality CloudServer, an open S3-compatible server that requires no
+// license and supports path-style requests. Official MinIO CE images
+// (minio/minio on Docker Hub and quay.io, registry.min.io) are no longer
+// anonymously pullable, so they cannot back a public CI.
+// https://hub.docker.com/r/zenko/cloudserver
+// NOTE: the backend relies on conditional create (`If-None-Match: *`), which
+// this image must support for the "keeps create-only ... semantics" assertion.
+const S3_IMAGE = 'zenko/cloudserver:8.7.33';
+const S3_PORT = 8_000;
+const S3_ACCESS_KEY = 'koharu-minio';
+const S3_SECRET_KEY = 'koharu-minio-integration-secret';
 const BUCKET = 'koharu-media-integration';
 const PREFIX = 'suite/integration/v1';
 const REGION = 'us-east-1';
@@ -77,23 +81,23 @@ async function readBlob(
   }
 }
 
-describe.skipIf(!containerRuntimeAvailable)('S3 media blob backend against MinIO', () => {
+describe.skipIf(!containerRuntimeAvailable)('S3 media blob backend against an S3-compatible container', () => {
   beforeAll(async () => {
-    container = await new GenericContainer(MINIO_IMAGE)
+    container = await new GenericContainer(S3_IMAGE)
       .withEnvironment({
-        MINIO_ROOT_PASSWORD: MINIO_SECRET_KEY,
-        MINIO_ROOT_USER: MINIO_ACCESS_KEY,
+        SCALITY_ACCESS_KEY_ID: S3_ACCESS_KEY,
+        SCALITY_REGION: REGION,
+        SCALITY_SECRET_ACCESS_KEY: S3_SECRET_KEY,
       })
-      .withCommand(['server', '/data'])
-      .withExposedPorts(MINIO_PORT)
-      .withWaitStrategy(Wait.forHttp('/minio/health/ready', MINIO_PORT))
+      .withExposedPorts(S3_PORT)
+      .withWaitStrategy(Wait.forHttp('/getready', S3_PORT))
       .withStartupTimeout(120_000)
       .start();
 
-    const endpoint = `http://${container.getHost()}:${container.getMappedPort(MINIO_PORT)}`;
+    const endpoint = `http://${container.getHost()}:${container.getMappedPort(S3_PORT)}`;
     const credentials = {
-      accessKeyId: MINIO_ACCESS_KEY,
-      secretAccessKey: MINIO_SECRET_KEY,
+      accessKeyId: S3_ACCESS_KEY,
+      secretAccessKey: S3_SECRET_KEY,
     };
     bootstrapClient = new S3Client({
       credentials,
