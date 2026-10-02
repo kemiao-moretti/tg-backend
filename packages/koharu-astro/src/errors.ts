@@ -48,14 +48,14 @@ export class KoharuError extends Error {
   static aborted(): KoharuError {
     return new KoharuError({
       kind: 'aborted',
-      message: 'Koharu Suite request was aborted',
+      message: 'Memos request was aborted',
     });
   }
 
   static timeout(): KoharuError {
     return new KoharuError({
       kind: 'timeout',
-      message: 'Koharu Suite request timed out',
+      message: 'Memos request timed out',
     });
   }
 
@@ -63,7 +63,7 @@ export class KoharuError extends Error {
     return new KoharuError({
       cause,
       kind: 'network',
-      message: 'Koharu Suite request failed',
+      message: 'Memos request failed',
     });
   }
 
@@ -76,7 +76,7 @@ export class KoharuError extends Error {
     return new KoharuError({
       code: options.code,
       kind: 'http',
-      message: `Koharu Suite returned HTTP ${options.status}`,
+      message: `Memos returned HTTP ${options.status}`,
       rateLimit: options.rateLimit,
       retryAfterSeconds: options.retryAfterSeconds,
       status: options.status,
@@ -86,7 +86,7 @@ export class KoharuError extends Error {
   static invalidResponse(): KoharuError {
     return new KoharuError({
       kind: 'invalid_response',
-      message: 'Koharu Suite returned an invalid response',
+      message: 'Memos returned an invalid response',
     });
   }
 }

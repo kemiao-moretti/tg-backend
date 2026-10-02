@@ -119,7 +119,7 @@ const unavailableDiscoveryReader: MessageDiscoveryReader = {
         ? null
         : {
             id: channelId,
-            title: 'Koharu Suite Archive',
+            title: 'Memos Archive',
             updatedAt: new Date(0).toISOString(),
             username: null,
           },

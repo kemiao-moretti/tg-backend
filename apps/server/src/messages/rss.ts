@@ -85,14 +85,14 @@ export function buildRssDocument(options: BuildRssDocumentOptions): RssDocument 
   const origin = new URL(options.canonicalOrigin).origin;
   const selfUrl = absoluteUrl(origin, options.selfPath);
   const channelTitle = options.feed.channel
-    ? `${options.feed.channel.title} — Koharu Suite Archive`
-    : 'Koharu Suite Archive';
+    ? `${options.feed.channel.title} — Memos Archive`
+    : 'Memos Archive';
   const channelLink = options.feed.channel?.username
     ? `https://t.me/${options.feed.channel.username}`
     : absoluteUrl(origin, '/api/v1/channels');
   const channelDescription = options.feed.channel
     ? `Latest public messages archived from ${options.feed.channel.title}.`
-    : 'Latest public messages archived by Koharu Suite.';
+    : 'Latest public messages archived by 克喵:).';
   const items = options.feed.items
     .map((message) => {
       const link = itemLink(message, origin);

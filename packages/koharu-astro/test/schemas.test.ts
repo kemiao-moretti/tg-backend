@@ -42,7 +42,7 @@ describe('public response schemas', () => {
     {
       input: {
         ...message,
-        media: [{ ...message.media[0], originalUrl: 'https://suite.example/media' }],
+        media: [{ ...message.media[0], originalUrl: 'https://tg-api.example/media' }],
       },
       name: 'absolute media URL',
     },

@@ -29,7 +29,7 @@ describe('RSS 2.0 serializer', () => {
     expect(escapeXml(`&<>"'`)).toBe('&amp;&lt;&gt;&quot;&apos;');
 
     const document = buildRssDocument({
-      canonicalOrigin: 'https://suite.example',
+      canonicalOrigin: 'https://tg-api.example',
       feed: {
         channel: null,
         items: [message],
@@ -39,10 +39,10 @@ describe('RSS 2.0 serializer', () => {
     });
 
     expect(document.body).toContain(
-      '<atom:link href="https://suite.example/api/v1/rss.xml" rel="self"',
+      '<atom:link href="https://tg-api.example/api/v1/rss.xml" rel="self"',
     );
     expect(document.body).toContain(
-      '<link>https://suite.example/api/v1/messages/019bf895-0e70-7881-83b3-471b8dbb1b33</link>',
+      '<link>https://tg-api.example/api/v1/messages/019bf895-0e70-7881-83b3-471b8dbb1b33</link>',
     );
     expect(document.body).toContain(
       '<description>&lt;p&gt;Safe &amp;amp; lovely&lt;/p&gt;</description>',
@@ -55,7 +55,7 @@ describe('RSS 2.0 serializer', () => {
 
   it('is byte-for-byte deterministic and uses a stable empty-feed timestamp', () => {
     const input = {
-      canonicalOrigin: 'https://suite.example',
+      canonicalOrigin: 'https://tg-api.example',
       feed: { channel: null, items: [], updatedAt: null },
       selfPath: '/api/v1/rss.xml',
     };

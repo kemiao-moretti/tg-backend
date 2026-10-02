@@ -39,7 +39,7 @@ describe('typed client', () => {
       return jsonResponse({ items: [message], nextCursor: 'next-page' });
     });
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -71,7 +71,7 @@ describe('typed client', () => {
       }),
     );
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -102,7 +102,7 @@ describe('typed client', () => {
       jsonResponse({ items: [message], nextCursor: null }),
     );
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -137,7 +137,7 @@ describe('typed client', () => {
     };
     const fetchMock = vi.fn(async (_input: string | URL | Request) => jsonResponse(context));
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -153,7 +153,7 @@ describe('typed client', () => {
       jsonResponse({ items: [], mode: 'trigram', nextCursor: null }),
     );
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -172,7 +172,7 @@ describe('typed client', () => {
   it('rejects more than 32 unique visible channel IDs before fetch', () => {
     const fetchMock = vi.fn();
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
     const channelIds = Array.from(
@@ -187,7 +187,7 @@ describe('typed client', () => {
   it('validates short search boundaries before issuing a request', async () => {
     const fetchMock = vi.fn();
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -197,7 +197,7 @@ describe('typed client', () => {
 
   it('normalizes API and fallback HTTP errors without retaining response bodies', async () => {
     const apiClient = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(async () =>
         jsonResponse(
           { error: { code: 'message_not_found', message: 'sensitive server detail' } },
@@ -215,7 +215,7 @@ describe('typed client', () => {
     expect(apiError.message).not.toContain('sensitive server detail');
 
     const htmlClient = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(
         async () => new Response('<article>private response body</article>', { status: 500 }),
       ) as typeof fetch,
@@ -228,7 +228,7 @@ describe('typed client', () => {
 
   it('preserves bounded rate-limit metadata on 429', async () => {
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(async () =>
         jsonResponse(
           { error: { code: 'rate_limited', message: 'Too many requests' } },
@@ -256,7 +256,7 @@ describe('typed client', () => {
 
   it('classifies invalid success responses without exposing content', async () => {
     const invalidJsonClient = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(async () => new Response('private invalid JSON')) as typeof fetch,
     });
     const jsonError = await rejected(invalidJsonClient.channels.list());
@@ -269,7 +269,7 @@ describe('typed client', () => {
     expect(jsonError.message).not.toContain('private invalid JSON');
 
     const driftClient = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(async () => jsonResponse({ items: 'not-an-array' })) as typeof fetch,
     });
     const driftError = await rejected(driftClient.channels.list());
@@ -280,7 +280,7 @@ describe('typed client', () => {
   it('preserves a network cause while using a safe normalized message', async () => {
     const cause = new Error('low-level connection failure');
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: vi.fn(async () => {
         throw cause;
       }) as typeof fetch,
@@ -289,7 +289,7 @@ describe('typed client', () => {
     const error = await rejected(client.channels.list());
     expect(error).toMatchObject({ code: null, kind: 'network', status: null });
     expect(error.cause).toBe(cause);
-    expect(error.message).toBe('Koharu Suite request failed');
+    expect(error.message).toBe('Memos request failed');
   });
 
   it('gives caller abort precedence and does not retain its reason', async () => {
@@ -297,7 +297,7 @@ describe('typed client', () => {
     controller.abort(new Error('private caller reason'));
     const fetchMock = vi.fn();
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 
@@ -317,7 +317,7 @@ describe('typed client', () => {
         }),
     );
     const client = createKoharuClient({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
       timeoutMs: 1_000,
     });
@@ -330,12 +330,12 @@ describe('typed client', () => {
   });
 
   it('rejects unsafe origins, invalid IDs, and out-of-range timeouts before fetch', () => {
-    expect(() => createKoharuClient({ baseUrl: 'https://suite.example/' })).toThrow(TypeError);
-    expect(() => createKoharuClient({ baseUrl: 'https://suite.example', timeoutMs: 999 })).toThrow(
+    expect(() => createKoharuClient({ baseUrl: 'https://tg-api.example/' })).toThrow(TypeError);
+    expect(() => createKoharuClient({ baseUrl: 'https://tg-api.example', timeoutMs: 999 })).toThrow(
       RangeError,
     );
 
-    const client = createKoharuClient({ baseUrl: 'https://suite.example' });
+    const client = createKoharuClient({ baseUrl: 'https://tg-api.example' });
     expect(() => client.messages.get({ messageId: 'not-a-uuid' })).toThrow(TypeError);
   });
 });

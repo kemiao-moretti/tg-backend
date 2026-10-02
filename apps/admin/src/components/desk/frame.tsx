@@ -24,8 +24,8 @@ export function TopBar({
     <header className="border-b">
       <div className="flex h-11 items-center justify-between gap-4 px-3">
         <div className="flex items-baseline gap-3">
-          <span className="font-serif text-base font-semibold">Owner Desk</span>
-          <span className="hidden text-xs text-faint sm:inline">KOHARU SUITE</span>
+          <span className="font-serif text-base font-semibold">微博客数据</span>
+          <span className="hidden text-xs text-faint sm:inline">TG-API</span>
           <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span
               aria-hidden="true"

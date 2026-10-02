@@ -148,12 +148,12 @@ describe('configuration', () => {
     expect(
       resolveAuthConfig({
         BETTER_AUTH_SECRET: 'test-secret-with-at-least-32-characters',
-        BETTER_AUTH_URL: 'https://suite.example.com/',
+        BETTER_AUTH_URL: 'https://tg-api.example.com/',
       }),
     ).toEqual({
-      baseUrl: 'https://suite.example.com',
+      baseUrl: 'https://tg-api.example.com',
       secret: 'test-secret-with-at-least-32-characters',
-      trustedOrigin: 'https://suite.example.com',
+      trustedOrigin: 'https://tg-api.example.com',
     });
 
     expect(
@@ -168,25 +168,25 @@ describe('configuration', () => {
     expect(() =>
       resolveAuthConfig({
         BETTER_AUTH_SECRET: 'short',
-        BETTER_AUTH_URL: 'https://suite.example.com',
+        BETTER_AUTH_URL: 'https://tg-api.example.com',
       }),
     ).toThrow();
     expect(() =>
       resolveAuthConfig({
         BETTER_AUTH_SECRET: 'test-secret-with-at-least-32-characters',
-        BETTER_AUTH_URL: 'http://suite.example.com',
+        BETTER_AUTH_URL: 'http://tg-api.example.com',
       }),
     ).toThrow();
     expect(() =>
       resolveAuthConfig({
         BETTER_AUTH_SECRET: 'test-secret-with-at-least-32-characters',
-        BETTER_AUTH_URL: 'https://suite.example.com/admin',
+        BETTER_AUTH_URL: 'https://tg-api.example.com/admin',
       }),
     ).toThrow();
     expect(() =>
       resolveAuthConfig({
         BETTER_AUTH_SECRET: 'test-secret-with-at-least-32-characters',
-        BETTER_AUTH_URL: 'https://user:password@suite.example.com',
+        BETTER_AUTH_URL: 'https://user:password@tg-api.example.com',
       }),
     ).toThrow();
   });

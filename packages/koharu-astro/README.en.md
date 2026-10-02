@@ -23,10 +23,10 @@ must configure an Astro adapter that supports on-demand rendering.
 ## Typed client
 
 ```ts
-import { createKoharuClient } from '@coszone/koharu-astro/client';
+import { createKoharuClient } from "@coszone/koharu-astro/client";
 
 const client = createKoharuClient({
-  baseUrl: 'https://suite.example.com',
+  baseUrl: "https://tg-api.example.com",
 });
 
 const channels = await client.channels.list();
@@ -46,7 +46,7 @@ const context = await client.messages.context({
 });
 
 const result = await client.search.messages({
-  query: 'Astro',
+  query: "Astro",
   channelIds: channels.items.map((channel) => channel.id),
 });
 ```
@@ -72,16 +72,16 @@ unfiltered.
 
 ```ts
 // src/live.config.ts
-import { defineLiveCollection } from 'astro:content';
+import { defineLiveCollection } from "astro:content";
 import {
   koharuChannelsLoader,
   koharuMessagesLoader,
   publicChannelSchema,
   publicMessageSchema,
-} from '@coszone/koharu-astro';
+} from "@coszone/koharu-astro";
 
 const baseUrl = process.env.KOHARU_SUITE_URL;
-if (!baseUrl) throw new Error('KOHARU_SUITE_URL is required');
+if (!baseUrl) throw new Error("KOHARU_SUITE_URL is required");
 
 export const collections = {
   koharuChannels: defineLiveCollection({
@@ -110,10 +110,10 @@ prove.
 ## Errors
 
 ```ts
-import { isKoharuError } from '@coszone/koharu-astro';
+import { isKoharuError } from "@coszone/koharu-astro";
 
 try {
-  await client.messages.get({ messageId: '...' });
+  await client.messages.get({ messageId: "..." });
 } catch (error) {
   if (isKoharuError(error)) {
     console.error(error.kind, error.status, error.code);

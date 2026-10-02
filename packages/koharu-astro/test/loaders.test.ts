@@ -24,8 +24,8 @@ function mockClient(): KoharuClient {
       })),
     },
     urls: {
-      channelRss: vi.fn(() => 'https://suite.example/channel.xml'),
-      globalRss: vi.fn(() => 'https://suite.example/rss.xml'),
+      channelRss: vi.fn(() => 'https://tg-api.example/channel.xml'),
+      globalRss: vi.fn(() => 'https://tg-api.example/rss.xml'),
     },
   };
 }
@@ -150,11 +150,11 @@ describe('Astro 6 Live Loaders', () => {
     const fetchMock = vi.fn();
 
     koharuChannelsLoader({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
     koharuMessagesLoader({
-      baseUrl: 'https://suite.example',
+      baseUrl: 'https://tg-api.example',
       fetch: fetchMock as typeof fetch,
     });
 

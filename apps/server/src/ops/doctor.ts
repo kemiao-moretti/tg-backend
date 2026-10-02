@@ -857,7 +857,7 @@ export function renderDoctorReport(report: DoctorReport): string {
     ok: 'ok',
     warn: 'warn',
   };
-  const lines = ['Koharu Suite doctor'];
+  const lines = ['Memos doctor'];
 
   for (const check of report.checks) {
     lines.push(`[${statusLabels[check.status]}] ${check.label}: ${check.message}`);

@@ -16,9 +16,9 @@ vi.mock('../src/auth/auth.js', () => ({
 }));
 
 const AUTH_CONFIG: AuthConfig = {
-  baseUrl: 'https://suite.example.com',
+  baseUrl: 'https://tg-api.example.com',
   secret: 'test-secret-with-at-least-32-characters',
-  trustedOrigin: 'https://suite.example.com',
+  trustedOrigin: 'https://tg-api.example.com',
 };
 
 function createOwnerDatabase(ownerId = 'owner-user-id'): Database {

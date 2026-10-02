@@ -164,7 +164,7 @@ describe('database migrations', () => {
     await repository.ingest(edited);
     const secondResult = await repository.ingest(second);
     const app = createApp({
-      canonicalOrigin: 'https://suite.example',
+      canonicalOrigin: 'https://tg-api.example',
       discovery: repository,
       messages: repository,
     });
@@ -231,7 +231,7 @@ describe('database migrations', () => {
     const globalXml = await globalFeed.text();
     expect(globalXml).toContain('current needle');
     expect(globalXml).not.toContain('obsolete');
-    expect(globalXml).toContain('https://suite.example/api/v1/rss.xml');
+    expect(globalXml).toContain('https://tg-api.example/api/v1/rss.xml');
     const channelFeed = await app.request(`/api/v1/channels/${initialResult.channelId}/rss.xml`);
     expect(channelFeed.status).toBe(200);
     expect(await channelFeed.text()).toContain(`urn:uuid:${secondResult.messageId}`);

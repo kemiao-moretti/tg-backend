@@ -129,7 +129,7 @@ describe('search and RSS HTTP routes', () => {
 
   it('serves deterministic global RSS with GET, HEAD, and conditional 304', async () => {
     const app = createApp({
-      canonicalOrigin: 'https://suite.example',
+      canonicalOrigin: 'https://tg-api.example',
       discovery: createDiscovery(),
     });
     const get = await app.request('/api/v1/rss.xml', {
@@ -140,7 +140,7 @@ describe('search and RSS HTTP routes', () => {
     expect(get.status).toBe(200);
     expect(get.headers.get('content-type')).toBe('application/rss+xml; charset=utf-8');
     expect(get.headers.get('cache-control')).toBe('public, no-cache');
-    expect(body).toContain('https://suite.example/api/v1/rss.xml');
+    expect(body).toContain('https://tg-api.example/api/v1/rss.xml');
     expect(body).not.toContain('attacker.example');
     const etag = get.headers.get('etag');
     expect(etag).toBeTruthy();
@@ -160,7 +160,7 @@ describe('search and RSS HTTP routes', () => {
 
   it('validates channel feeds and applies public CORS/rate-limit policy', async () => {
     const app = createApp({
-      canonicalOrigin: 'https://suite.example',
+      canonicalOrigin: 'https://tg-api.example',
       discovery: createDiscovery(),
       publicApi: {
         corsOrigins: new Set(['https://reader.example']),

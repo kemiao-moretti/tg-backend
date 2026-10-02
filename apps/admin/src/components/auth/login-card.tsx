@@ -70,7 +70,7 @@ export function LoginCard({ onComplete }: { onComplete(): Promise<void> }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-sm">
-        <p className="text-xs tracking-wide text-faint">KOHARU SUITE · OWNER DESK</p>
+        <p className="text-xs tracking-wide text-faint">TG-API · 微博客数据</p>
         <h1 className="mt-3 font-serif text-3xl font-semibold">
           {authStep === 'login' ? '回到你的内容室。' : '再确认一次。'}
         </h1>
