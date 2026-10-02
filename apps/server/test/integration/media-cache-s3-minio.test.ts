@@ -17,7 +17,7 @@ import { S3MediaBlobBackend } from '../../src/media-cache/s3-blob-backend.js';
 // https://hub.docker.com/r/zenko/cloudserver
 // NOTE: the backend relies on conditional create (`If-None-Match: *`), which
 // this image must support for the "keeps create-only ... semantics" assertion.
-const S3_IMAGE = 'zenko/cloudserver:8.7.33';
+const S3_IMAGE = 'zenko/cloudserver:8.2.7';
 const S3_PORT = 8_000;
 const S3_ACCESS_KEY = 'koharu-minio';
 const S3_SECRET_KEY = 'koharu-minio-integration-secret';
